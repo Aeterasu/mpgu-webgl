@@ -1,14 +1,38 @@
-const canvas = document.getElementById("canvas");
-const gl = canvas.getContext("webgl");
+import { Renderer } from "./renderer.js"
+import { Shader } from "./shader.js"
+import { initBuffers } from "./init_buffers.js";
 
-if (!gl)
+const vertexSrc = await fetchFile('./shader/vert.glsl');
+const fragmentSrc = await fetchFile('./shader/frag_random.glsl');
+
+let renderer = new Renderer();
+let glContext = renderer.glContext;
+
+let shader = new Shader(glContext, vertexSrc, fragmentSrc);
+let shaderProgram = shader.program;
+
+const programInfo = {
+    program: shaderProgram,
+    attribLocations: {
+        vertexPosition: glContext.getAttribLocation(shaderProgram, "aVertexPosition"),
+    },
+    uniformLocations: {
+        modelViewMatrix: glContext.getUniformLocation(shaderProgram, "uModelViewMatrix"),
+        projectionMatrix: glContext.getUniformLocation(shaderProgram, "uProjectionMatrix"),
+    },
+};
+
+const buffers = initBuffers(glContext);
+renderer.drawScene(programInfo, buffers);
+
+async function fetchFile(url) 
 {
-    throw new Error("WebGL not supported");
+    const res = await fetch(url);
+
+    if (!res.ok) 
+    {
+        throw new Error(`Failed to load file: ${url}`);
+    }
+
+    return await res.text();
 }
-
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-gl.viewport(0, 0, canvas.width, canvas.height);
-
-gl.clearColor(0.05, 0.05, 0.08, 1.0);
-gl.clear(gl.COLOR_BUFFER_BIT);
