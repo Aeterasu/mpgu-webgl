@@ -1,6 +1,5 @@
 import { Renderer } from "./renderer.js"
 import { Shader } from "./shader.js"
-import { initBuffers } from "./init_buffers.js";
 
 const vertexSrc = await fetchFile('./shader/vert.glsl');
 const fragmentSrc = await fetchFile('./shader/frag_random.glsl');
@@ -22,7 +21,7 @@ const programInfo = {
     },
 };
 
-const buffers = initBuffers(glContext);
+const buffers = renderer.initBuffers(glContext);
 renderer.drawScene(programInfo, buffers);
 
 async function fetchFile(url) 
