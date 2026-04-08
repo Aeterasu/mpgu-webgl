@@ -9,6 +9,9 @@ import { fetchFile } from "./file_loader.js"
 const renderer = new Renderer();
 const context = renderer.initRenderer();
 
+let lastTime = 0;
+let frameTime = 0;
+
 const vertexSrc = await fetchFile('./shader/vert.glsl');
 const fragmentSrc = await fetchFile('./shader/frag.glsl');
 
@@ -34,6 +37,12 @@ renderer.setupShader(shader); // TEMP
 
 function frame(time)
 {
+    // fps counting
+
+    handleFpsCounter(time);
+
+    // actual update logic. messy but will do for now!
+
     context.clear(context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
 
     cube1.rotation[0] = Math.PI / 6;
@@ -47,6 +56,18 @@ function frame(time)
 
     renderer.renderScene(scene, camera);
     requestAnimationFrame(frame);
+}
+
+function handleFpsCounter(time)
+{
+    const delta = time - lastTime;
+    lastTime = time;
+
+    frameTime = frameTime * 0.9 + delta * 0.1;
+
+    const fps = 1000 / frameTime;
+
+    document.getElementById("fps").textContent = "FPS: " + fps.toFixed(0);
 }
 
 requestAnimationFrame(frame);
