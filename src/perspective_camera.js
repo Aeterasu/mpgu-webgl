@@ -2,59 +2,85 @@ import { mat4, vec3 } from "https://cdn.jsdelivr.net/npm/gl-matrix@3.4.3/esm/ind
 
 export class PerspectiveCamera
 {
-    view = mat4.create();
-    projection = mat4.create();
+	view = mat4.create();
+	projection = mat4.create();
 
-    constructor(fov, aspect, near = 0.1, far = 1000.0)
-    {
-        this.fov = fov;
-        this.aspect = aspect;
-        this.near = near;
-        this.far = far;
+	constructor(fov, aspect, near = 0.1, far = 1000.0)
+	{
+		this.fov = fov;
+		this.aspect = aspect;
+		this.near = near;
+		this.far = far;
 
-        this.position = vec3.fromValues(0, 0, 5);
-        this.target = vec3.fromValues(0, 0, 0);
-        this.up = vec3.fromValues(0, 1, 0);
+		this.position = [0, 0, 0];
+		this.rotation = [0, 0, 0];
+		this.up = [0, 1, 0];
 
-        this.rebuildProjection();
-        this.rebuildView();
-    }
+		this.rebuildProjection();
+		this.rebuildView();
+	}
 
-    get viewMatrix()
-    { 
-        return this.view;
-    }
+	get viewMatrix()
+	{ 
+		return this.view;
+	}
 
-    get projectionMatrix()
-    { 
-        return this.projection;
-    }
+	get projectionMatrix()
+	{ 
+		return this.projection;
+	}
 
-    setPosition(x, y, z)
-    {
-        this.position = vec3.fromValues(x, y, z);
-        this.rebuildView();
-    }
+	setPosition(x, y, z)
+	{
+		this.position = [x, y, z];
+		this.rebuildView();
+	}
 
-    setAspect(aspect)
-    {
-        this.aspect = aspect;
-        this.rebuildProjection();
-    }
+	setRotation(pitch, yaw, roll)
+	{
+		this.rotation[0] = pitch;
+		this.rotation[1] = yaw;
+		this.rotation[2] = roll;
 
-    rebuildView()
-    {
-        mat4.lookAt(this.view, this.position, this.target, this.up);
-    }
+		this.rebuildView();
+	}
 
-    rebuildProjection()
-    {
-        mat4.perspective(
-            this.projection,
-            this.fov * Math.PI / 180, // rads
-            this.aspect,
-            this.near,
-            this.far
-        );
-    }
+	setAspect(aspect)
+	{
+		this.aspect = aspect;
+		this.rebuildProjection();
+	}
+
+	rebuildView()
+	{
+		const pitch = this.rotation[0];
+		const yaw = this.rotation[1];
+
+		const cosPitch = Math.cos(pitch);
+		const sinPitch = Math.sin(pitch);
+		const cosYaw = Math.cos(yaw);
+		const sinYaw = Math.sin(yaw);
+
+		const forward = vec3.fromValues(
+			cosPitch * sinYaw,
+			sinPitch,
+			-cosPitch * cosYaw
+		);
+
+		const target = vec3.create();
+		vec3.add(target, this.position, forward);
+
+		mat4.lookAt(this.view, this.position, target, this.up);
+	}
+
+	rebuildProjection()
+	{
+		mat4.perspective(
+			this.projection,
+			this.fov * Math.PI / 180, // rads
+			this.aspect,
+			this.near,
+			this.far
+		);
+	}
 }

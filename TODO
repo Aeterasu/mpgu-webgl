@@ -1,0 +1,15 @@
++ basic canvas
++ 3d scene
++ perspective camera
++ mesh loading from obj
++ basic light and normals
+
++ fps controls. movement and camera rotation
+- multiple lights
+- configurable light radius
+- directional light ?
+- specular, normal map
+- cpu particles
+- scene 1 - autumn
+- scene 2 - pico8 subway?
+- scene 3 - purple abyss
