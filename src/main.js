@@ -1,6 +1,7 @@
 import { Renderer } from "./renderer.js";
 import { Shader } from "./shader.js";
 import { Scene } from "./scene.js";
+import { Light } from "./light.js"
 import { Cube } from "./cube.js";
 import { PerspectiveCamera } from "./perspective_camera.js"
 
@@ -21,17 +22,24 @@ const camera = new PerspectiveCamera(60, context.canvas.width / context.canvas.h
 const scene = new Scene(shader);
 
 const cube1 = new Cube(context);
-cube1.position = [0, -1, 0]
+cube1.position = [0, -1, 0];
+cube1.color = [0.5, 1.0, 0.5];
 
 const cube2 = new Cube(context);
-cube2.position = [-3, 1, -2]
+cube2.position = [-3, 1, -2];
+cube2.color = [0.1, 0.8, 1.0];
 
 const cube3 = new Cube(context);
-cube3.position = [2, 2, -1]
+cube3.position = [2, 2, -1];
+cube3.color = [1.0, 0.1, 0.3];
 
-scene.add(cube1);
-scene.add(cube2);
-scene.add(cube3);
+const light = new Light([2.0, 4.0, 3.0], [1.0, 1.0, 1.0], 2.0);
+
+scene.addMesh(cube1);
+scene.addMesh(cube2);
+scene.addMesh(cube3);
+
+scene.setLight(light);
 
 renderer.setupShader(shader); // TEMP
 

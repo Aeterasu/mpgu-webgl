@@ -20,6 +20,9 @@ export class Renderer
         this.context.clearColor(0.0, 0.0, 0.0, 1.0);
         this.context.clear(this.context.COLOR_BUFFER_BIT);
 
+        this.context.enable(this.context.DEPTH_TEST);
+        this.context.depthFunc(this.context.LEQUAL);
+
         return this.context;
     }
 
@@ -39,9 +42,30 @@ export class Renderer
         shader.setMat4("uView", camera.viewMatrix);
         shader.setMat4("uProjection", camera.projectionMatrix);
 
+        const light = scene.light;
+
+        if (light)
+        {
+            var finalLightColor = 
+            [
+                light.color[0] * light.intensity,
+                light.color[1] * light.intensity,
+                light.color[2] * light.intensity,
+            ]
+
+            shader.setVec3("uLightPos", light.position);
+            shader.setVec3("uLightColor", finalLightColor);
+        }
+        else
+        {
+            shader.setVec3("uLightPos", [0.0, 0.0, 0.0]);
+            shader.setVec3("uLightColor", [0.0, 0.0, 0.0]);
+        }
+
         for (const mesh of scene.objects)
         {
             shader.setMat4("uModel", mesh.modelMatrix);
+            shader.setVec3("uObjectColor", mesh.color);
 
             context.bindVertexArray(mesh.vao);
             context.drawElements(context.TRIANGLES, mesh.indexCount, context.UNSIGNED_SHORT, 0);
