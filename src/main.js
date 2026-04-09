@@ -1,5 +1,6 @@
 import { Renderer } from "./renderer.js";
 import { Shader } from "./shader.js";
+import { Mesh } from "./mesh.js"
 import { Scene } from "./scene.js";
 import { Light } from "./light.js"
 import { Cube } from "./cube.js";
@@ -21,27 +22,30 @@ const camera = new PerspectiveCamera(60, context.canvas.width / context.canvas.h
 
 const scene = new Scene(shader);
 
+const monkeyModel = await fetchFile('./mesh/monkey.obj');
+const monkey = await Mesh.fromObj(context, monkeyModel);
+monkey.position = [0, -1, 0];
+monkey.color = [0.5, 1.0, 0.5];
+
 const cube1 = new Cube(context);
-cube1.position = [0, -1, 0];
-cube1.color = [0.5, 1.0, 0.5];
+cube1.position = [-3, 1, -2];
+cube1.color = [0.1, 0.8, 1.0];
 
 const cube2 = new Cube(context);
-cube2.position = [-3, 1, -2];
-cube2.color = [0.1, 0.8, 1.0];
+cube2.position = [2, 2, -1];
+cube2.color = [1.0, 0.1, 0.3];
 
-const cube3 = new Cube(context);
-cube3.position = [2, 2, -1];
-cube3.color = [1.0, 0.1, 0.3];
+const light = new Light([2.0, 4.0, 3.0], [1.0, 1.0, 1.0], 1.0);
 
-const light = new Light([2.0, 4.0, 3.0], [1.0, 1.0, 1.0], 2.0);
-
+scene.addMesh(monkey);
 scene.addMesh(cube1);
 scene.addMesh(cube2);
-scene.addMesh(cube3);
 
 scene.setLight(light);
 
 renderer.setupShader(shader); // TEMP
+
+console.log(monkey);
 
 function frame(time)
 {
@@ -53,14 +57,14 @@ function frame(time)
 
     context.clear(context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
 
-    cube1.rotation[0] = Math.PI / 6;
-    cube1.rotation[1] = time * 0.001;
+    monkey.rotation[0] = 0.0;
+    monkey.rotation[1] = time * 0.001;
 
-    cube2.rotation[0] = -Math.PI / 6;
-    cube2.rotation[2] = time * -0.001;
+    cube1.rotation[0] = -Math.PI / 6;
+    cube1.rotation[2] = time * -0.001;
 
-    cube3.rotation[1] = -Math.PI / 6;
-    cube3.rotation[0] = time * -0.001;
+    cube2.rotation[1] = -Math.PI / 6;
+    cube2.rotation[0] = time * -0.001;
 
     renderer.renderScene(scene, camera);
     requestAnimationFrame(frame);

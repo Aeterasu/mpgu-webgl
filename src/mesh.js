@@ -64,4 +64,62 @@ export class Mesh
 		mat4.scale(this.#modelMatrix, this.#modelMatrix, this.scale);
 		return this.#modelMatrix;
 	}
+
+	static async fromObj(context, file)
+	{
+		const text = file;
+
+		const positions = [];
+		const normals = [];
+
+		const finalVertices = [];
+		const finalIndices = [];
+
+		const lines = text.split("\n");
+
+		for (let line of lines)
+		{
+			line = line.trim();
+
+			if (line.startsWith("v "))
+			{
+				const [, x, y, z] = line.split(/\s+/);
+				positions.push([+x, +y, +z]);
+			}
+			else if (line.startsWith("vn "))
+			{
+				const [, x, y, z] = line.split(/\s+/);
+				normals.push([+x, +y, +z]);
+			}
+			else if (line.startsWith("f "))
+			{
+				const [, ...verts] = line.split(/\s+/);
+
+				// triangulate since obj files can have quads/ngons/whatever
+				for (let i = 1; i < verts.length - 1; i++)
+				{
+					const tri = [verts[0], verts[i], verts[i + 1]];
+
+					for (let v of tri)
+					{
+						const [pi, , ni] = v.split("/").map(x => x ? parseInt(x) : 0);
+
+						const p = positions[pi - 1];
+						const n = ni ? normals[ni - 1] : [0, 0, 0];
+
+						finalVertices.push(
+							p[0], p[1], p[2],
+							n[0], n[1], n[2]
+						);
+
+						finalIndices.push(finalIndices.length);
+					}
+				}
+			}
+		}
+
+		const mesh = new Mesh(context);
+		mesh.upload(finalVertices, finalIndices);
+		return mesh;
+	}
 }
