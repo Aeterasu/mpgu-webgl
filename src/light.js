@@ -1,17 +1,17 @@
-import { mat4, vec3 } from "https://cdn.jsdelivr.net/npm/gl-matrix@3.4.3/esm/index.js";
-
 class Light
 {
-    position = vec3.fromValues(0, 0, 0);
-    color = [1.0, 1.0, 1.0];
-    intensity = 1.0
+    position = [0, 0, 0];
+    color = [1, 1, 1];
+    intensity = 1.0;
+    radius = 16.0;
 
-    constructor(position, color, intensity)
+    constructor(position, color, intensity, radius)
 	{
 		this.position = position;
         this.color = color;
         this.intensity = intensity;
-	}
+        this.radius = radius;
+    }
 }
 
 export { Light };

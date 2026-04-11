@@ -1,27 +1,61 @@
 #version 300 es
 precision mediump float;
 
+#define MAX_LIGHTS 16
+
+struct PointLight
+{
+    vec3  position;
+    vec3  color;
+    float intensity;
+    float radius;
+};
+
+uniform PointLight uLights[MAX_LIGHTS];
+uniform int        uLightCount;
+
+uniform vec3 uCameraPos;
+uniform vec3 uObjectColor;
+
 in vec3 vNormal;
 in vec3 vWorldPos;
 
-uniform vec3 uLightPos;
-uniform vec3 uLightColor;
-uniform vec3 uObjectColor;
-
 out vec4 fragColor;
+
+vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
+{
+    vec3 toLight = light.position - fragPos;
+    float dist = length(toLight);
+    vec3 lightDir = normalize(toLight);
+
+    // attenuation
+    float attenuation = clamp(1.0 - (dist / light.radius), 0.0, 1.0);
+    attenuation = attenuation * attenuation;
+
+    // diffuse
+    float diff = max(dot(normal, lightDir), 0.0);
+    vec3 diffuse = diff * light.color * light.intensity;
+
+    // specular
+    vec3 halfway = normalize(lightDir + viewDir);
+    float spec = pow(max(dot(normal, halfway), 0.0), 32.0);
+    vec3 specular = spec * light.color * light.intensity;
+
+    return (diffuse + specular) * attenuation;
+}
 
 void main()
 {
-    // ambient - baseline light so nothing is pure black
-    float ambientStrength = 0.1;
-    vec3 ambient = ambientStrength * uLightColor;
-
-    // diffuse dot product between normal and light direction
     vec3 normal = normalize(vNormal);
-    vec3 lightDir = normalize(uLightPos - vWorldPos);
-    float diff = max(dot(normal, lightDir), 0.0);
-    vec3 diffuse = diff * uLightColor;
+    vec3 viewDir = normalize(uCameraPos - vWorldPos);
 
-    vec3 result = (ambient + diffuse) * uObjectColor;
+    // ambient - baseline light so nothing is pure black
+    vec3 result = 0.1 * uObjectColor;
+
+    for (int i = 0; i < uLightCount; i++)
+    {
+        result += calcPointLight(uLights[i], normal, vWorldPos, viewDir) * uObjectColor;
+    }
+
     fragColor = vec4(result, 1.0);
 }

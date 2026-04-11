@@ -1,7 +1,7 @@
 export class Scene
 {
     objects = [];
-    light = null;
+    lights = [];
 
     addMesh(mesh)
     {
@@ -13,8 +13,13 @@ export class Scene
         this.objects = this.objects.filter(o => o !== mesh);
     }
 
-    setLight(light)
+    addLight(light)
     {
-        this.light = light;
+        this.lights.push(light);
+    }
+
+    removeLight(light)
+    { 
+        this.lights = this.lights.filter(o => o !== light);
     }
 }

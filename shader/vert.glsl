@@ -12,10 +12,7 @@ out vec3 vWorldPos;
 void main()
 {
     vec4 worldPos = uModel * vec4(aPosition, 1.0);
-
     vWorldPos = worldPos.xyz;
-
     vNormal = mat3(transpose(inverse(uModel))) * aNormal;
-
     gl_Position = uProjection * uView * worldPos;
 }

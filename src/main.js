@@ -2,7 +2,7 @@ import { Renderer } from "./renderer.js";
 import { Shader } from "./shader.js";
 import { Mesh } from "./mesh.js"
 import { Scene } from "./scene.js";
-import { Light } from "./light.js"
+import { Light } from "./light.js";
 import { Cube } from "./cube.js";
 import { PerspectiveCamera } from "./perspective_camera.js"
 import { Player } from "./player.js"
@@ -26,7 +26,7 @@ const scene = new Scene(shader);
 
 const monkeyModel = await fetchFile("./mesh/monkey.obj");
 const monkey = await Mesh.fromObj(context, monkeyModel);
-monkey.color = [0.5, 1.0, 0.5];
+monkey.color = [1.0, 1.0, 1.0];
 
 const planeModel = await fetchFile("./mesh/plane.obj");
 const plane = await Mesh.fromObj(context, planeModel);
@@ -34,14 +34,14 @@ plane.color = [0.5, 0.5, 0.5];
 plane.scale = [25.0, 1.0, 25.0];
 plane.position = [0.0, -2.5, 0.0];
 
-const light = new Light([0.0, 3.0, 0.0], [1.0, 1.0, 1.0], 1.0);
-
 const player = new Player(canvas);
 
 scene.addMesh(monkey);
 scene.addMesh(plane);
 
-scene.setLight(light);
+scene.addLight(new Light([2, 1, -7], [1.0, 0.8, 0.7], 1.0, 10.0));
+scene.addLight(new Light([-3, 1, -2], [0.4, 0.6, 1.0], 1.5, 8.0));
+scene.addLight(new Light([ 0, 2, 1], [0.2, 1.0, 0.4], 0.8, 12.0));
 
 renderer.setupShader(shader); // TEMP
 

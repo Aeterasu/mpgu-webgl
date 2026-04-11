@@ -3,13 +3,18 @@
 + perspective camera
 + mesh loading from obj
 + basic light and normals
-
 + fps controls. movement and camera rotation
+
+- shader per object
+- configurable ambient light color
 - multiple lights
 - configurable light radius
 - directional light ?
 - specular, normal map
 - cpu particles
-- scene 1 - autumn
-- scene 2 - pico8 subway?
-- scene 3 - purple abyss
+- backface culling
+- debug performance draw
+- scene 1 - autumn. flowing leaves. single directional light
+- scene 2 - purple abyss. rain particles
+- scene 3 - plane, moving cubes with lights on them. particles
+- code cleanup
