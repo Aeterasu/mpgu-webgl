@@ -35,6 +35,7 @@ plane.scale = [25.0, 1.0, 25.0];
 plane.position = [0.0, -2.5, 0.0];
 
 const player = new Player(canvas);
+player.position[2] = 5.0;
 
 scene.setAmbientLightColor([0.0, 0.0, 0.2]);
 
