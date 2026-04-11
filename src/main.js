@@ -36,12 +36,14 @@ plane.position = [0.0, -2.5, 0.0];
 
 const player = new Player(canvas);
 
+scene.setAmbientLightColor([0.0, 0.0, 0.2]);
+
 scene.addMesh(monkey);
 scene.addMesh(plane);
 
-scene.addLight(new Light([2, 1, -7], [1.0, 0.8, 0.7], 1.0, 10.0));
-scene.addLight(new Light([-3, 1, -2], [0.4, 0.6, 1.0], 1.5, 8.0));
-scene.addLight(new Light([ 0, 2, 1], [0.2, 1.0, 0.4], 0.8, 12.0));
+scene.addLight(new Light([2, 1, -7], [1.0, 0.8, 0.7], 1.0, 24.0));
+scene.addLight(new Light([-3, 1, -2], [0.4, 0.6, 1.0], 1.5, 16.0));
+scene.addLight(new Light([ 0, 1, 1], [0.2, 1.0, 0.4], 0.8, 16.0));
 
 renderer.setupShader(shader); // TEMP
 

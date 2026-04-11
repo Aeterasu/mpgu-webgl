@@ -6,13 +6,14 @@
 + fps controls. movement and camera rotation
 
 - shader per object
-- configurable ambient light color
-- multiple lights
-- configurable light radius
++ configurable ambient light color
++ multiple lights
++ configurable light radius
 - directional light ?
-- specular, normal map
++ specular
+- normal map
 - cpu particles
-- backface culling
++ backface culling
 - debug performance draw
 - scene 1 - autumn. flowing leaves. single directional light
 - scene 2 - purple abyss. rain particles

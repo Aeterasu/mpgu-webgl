@@ -2,6 +2,12 @@ export class Scene
 {
     objects = [];
     lights = [];
+    ambientLightColor = [0.0, 0.0, 0.0];
+
+    setAmbientLightColor(color)
+    {
+        this.ambientLightColor = color;
+    }
 
     addMesh(mesh)
     {

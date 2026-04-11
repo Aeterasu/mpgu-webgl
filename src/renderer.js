@@ -64,6 +64,7 @@ export class Renderer
 		{
 			shader.setMat4("uModel", mesh.modelMatrix);
 			shader.setVec3("uObjectColor", mesh.color);
+			shader.setVec3("uAmbientLightColor", scene.ambientLightColor);
 
 			context.bindVertexArray(mesh.vao);
 			context.drawElements(context.TRIANGLES, mesh.indexCount, context.UNSIGNED_SHORT, 0);

@@ -5,17 +5,19 @@ precision mediump float;
 
 struct PointLight
 {
-    vec3  position;
-    vec3  color;
+    vec3 position;
+    vec3 color;
     float intensity;
     float radius;
 };
 
 uniform PointLight uLights[MAX_LIGHTS];
-uniform int        uLightCount;
+uniform int uLightCount;
 
 uniform vec3 uCameraPos;
 uniform vec3 uObjectColor;
+
+uniform vec3 uAmbientLightColor;
 
 in vec3 vNormal;
 in vec3 vWorldPos;
@@ -50,7 +52,7 @@ void main()
     vec3 viewDir = normalize(uCameraPos - vWorldPos);
 
     // ambient - baseline light so nothing is pure black
-    vec3 result = 0.1 * uObjectColor;
+    vec3 result = uAmbientLightColor * uObjectColor;
 
     for (int i = 0; i < uLightCount; i++)
     {
