@@ -3,7 +3,7 @@ import { Shader } from "./shader.js";
 import { Mesh } from "./mesh.js"
 import { Scene } from "./scene.js";
 import { Light } from "./light.js";
-import { Cube } from "./cube.js";
+import { Texture } from "./texture.js";
 import { PerspectiveCamera } from "./perspective_camera.js"
 import { Player } from "./player.js"
 
@@ -28,6 +28,19 @@ const monkeyModel = await fetchFile("./mesh/monkey.obj");
 const monkey = await Mesh.fromObj(context, monkeyModel);
 monkey.color = [1.0, 1.0, 1.0];
 
+const cubeModel = await fetchFile("./mesh/cube.obj");
+const cube1 = await Mesh.fromObj(context, cubeModel);
+cube1.position = [-3.0, -2.5, -3.0];
+
+const cube2 = await Mesh.fromObj(context, cubeModel);
+cube2.position = [3.0, -2.5, -3.0];
+
+const fumo = await Texture.fromUrl(context, "./texture/fumo.png");
+cube1.texture = fumo;
+
+const cinema = await Texture.fromUrl(context, "./texture/cinema.png");
+cube2.texture = cinema;
+
 const planeModel = await fetchFile("./mesh/plane.obj");
 const plane = await Mesh.fromObj(context, planeModel);
 plane.color = [0.5, 0.5, 0.5];
@@ -41,6 +54,8 @@ scene.setAmbientLightColor([0.0, 0.0, 0.2]);
 
 scene.addMesh(monkey);
 scene.addMesh(plane);
+scene.addMesh(cube1);
+scene.addMesh(cube2);
 
 scene.addLight(new Light([2, 1, -7], [1.0, 0.8, 0.7], 1.0, 24.0));
 scene.addLight(new Light([-3, 1, -2], [0.4, 0.6, 1.0], 1.5, 16.0));
@@ -62,6 +77,14 @@ function frame(time)
     monkey.rotation[0] = 0.0;
     monkey.rotation[1] = time * 0.001;
     monkey.position = [0, -0.5 + Math.sin(time * 0.002) * 0.3, -3];
+
+    cube1.rotation[0] = time * 0.001;
+    cube1.rotation[1] = time * 0.001;
+    cube1.position[1] = -0.5 + Math.sin(time * 0.003) * 0.3;
+
+    cube2.rotation[0] = time * -0.001;
+    cube2.rotation[1] = time * -0.001;
+    cube2.position[1] = -0.5 + Math.sin(time * 0.003) * 0.3;
 
     player.update(deltaTime / 1000.0);
 

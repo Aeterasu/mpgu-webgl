@@ -6,6 +6,7 @@
 + fps controls. movement and camera rotation
 
 + wasd controls
++ textures
 - shader per object
 + configurable ambient light color
 + multiple lights

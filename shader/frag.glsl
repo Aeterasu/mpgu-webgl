@@ -15,11 +15,14 @@ uniform PointLight uLights[MAX_LIGHTS];
 uniform int uLightCount;
 
 uniform vec3 uObjectColor;
-
 uniform vec3 uAmbientLightColor;
+
+uniform sampler2D uTexture;
+uniform int uHasTexture;
 
 in vec3 vNormal;
 in vec3 vWorldPos;
+in vec2 vUV;
 
 out vec4 fragColor;
 
@@ -40,13 +43,16 @@ vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos)
 
 void main()
 {
-    vec3 normal = normalize(vNormal);
+    vec3 baseColor = uHasTexture == 1
+        ? texture(uTexture, vUV).rgb * uObjectColor
+        : uObjectColor;
 
-    vec3 result = uAmbientLightColor * uObjectColor;
+    vec3 normal = normalize(vNormal);
+    vec3 result = uAmbientLightColor * baseColor;
 
     for (int i = 0; i < uLightCount; i++)
     {
-        result += calcPointLight(uLights[i], normal, vWorldPos) * uObjectColor;
+        result += calcPointLight(uLights[i], normal, vWorldPos) * baseColor;
     }
 
     fragColor = vec4(result, 1.0);

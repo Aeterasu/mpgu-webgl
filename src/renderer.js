@@ -66,9 +66,25 @@ export class Renderer
 			shader.setVec3("uObjectColor", mesh.color);
 			shader.setVec3("uAmbientLightColor", scene.ambientLightColor);
 
+			if (mesh.texture)
+			{
+				mesh.texture.bind(0);
+				shader.setInt("uTexture", 0);
+				shader.setInt("uHasTexture", 1);
+			}
+			else
+			{
+				shader.setInt("uHasTexture", 0);
+			}
+
 			context.bindVertexArray(mesh.vao);
 			context.drawElements(context.TRIANGLES, mesh.indexCount, context.UNSIGNED_SHORT, 0);
 			context.bindVertexArray(null);
+
+			if (mesh.texture)
+			{
+				mesh.texture.unbind(0);
+			}
 		}
 
 		shader.unbind();        

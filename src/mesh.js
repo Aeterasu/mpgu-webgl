@@ -32,15 +32,19 @@ export class Mesh
 		context.bindBuffer(context.ELEMENT_ARRAY_BUFFER, this.ebo);
 		context.bufferData(context.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), context.DYNAMIC_DRAW);
 
-		const stride = 6 * 4; // 6 floats per vertex 4 bytes each
+		const stride = 8 * 4; // 8 floats per vertex
 
-		// slot 0: position. 3 floats, starts at byte 0
+		// slot 0: position — 3 floats, offset 0
 		context.vertexAttribPointer(0, 3, context.FLOAT, false, stride, 0);
 		context.enableVertexAttribArray(0);
 
-		// slot 1: normal. 3 floats, starts at byte 12 after the 3 position floats
+		// slot 1: normal — 3 floats, offset 12
 		context.vertexAttribPointer(1, 3, context.FLOAT, false, stride, 3 * 4);
 		context.enableVertexAttribArray(1);
+
+		// slot 2: uv — 2 floats, offset 24
+		context.vertexAttribPointer(2, 2, context.FLOAT, false, stride, 6 * 4);
+		context.enableVertexAttribArray(2);
 
 		context.bindVertexArray(null);
 
@@ -67,15 +71,14 @@ export class Mesh
 
 	static async fromObj(context, file)
 	{
-		const text = file;
-
 		const positions = [];
 		const normals = [];
+		const uvs = [];
 
 		const finalVertices = [];
 		const finalIndices = [];
 
-		const lines = text.split("\n");
+		const lines = file.split("\n");
 
 		for (let line of lines)
 		{
@@ -91,25 +94,31 @@ export class Mesh
 				const [, x, y, z] = line.split(/\s+/);
 				normals.push([+x, +y, +z]);
 			}
+			else if (line.startsWith("vt "))
+			{
+				const [, u, v] = line.split(/\s+/);
+				uvs.push([+u, +v]);
+			}
 			else if (line.startsWith("f "))
 			{
 				const [, ...verts] = line.split(/\s+/);
 
-				// triangulate since obj files can have quads/ngons/whatever
 				for (let i = 1; i < verts.length - 1; i++)
 				{
 					const tri = [verts[0], verts[i], verts[i + 1]];
 
-					for (let v of tri)
+					for (const v of tri)
 					{
-						const [pi, , ni] = v.split("/").map(x => x ? parseInt(x) : 0);
+						const [pi, ti, ni] = v.split("/").map(x => x ? parseInt(x) : 0);
 
 						const p = positions[pi - 1];
-						const n = ni ? normals[ni - 1] : [0, 0, 0];
+						const n = ni ? normals[ni - 1]  : [0, 0, 0];
+						const t = ti ? uvs[ti - 1]      : [0, 0];
 
 						finalVertices.push(
 							p[0], p[1], p[2],
-							n[0], n[1], n[2]
+							n[0], n[1], n[2],
+							t[0], t[1]
 						);
 
 						finalIndices.push(finalIndices.length);
