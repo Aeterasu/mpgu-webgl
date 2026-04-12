@@ -20,6 +20,11 @@ export class Mesh
 		this.indexCount = 0;
 	}
 
+	assignShader(shader)
+	{
+		this.shader = shader;
+	}
+
 	upload(vertices, indices)
 	{
 		const context = this.context;

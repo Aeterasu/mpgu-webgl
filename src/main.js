@@ -18,22 +18,27 @@ let deltaTime = 0.0;
 
 const vertexSrc = await fetchFile('./shader/vert.glsl');
 const fragmentSrc = await fetchFile('./shader/frag.glsl');
+const fragmentUnlitSrc = await fetchFile('./shader/frag_unlit.glsl');
 
-const shader = new Shader(context, vertexSrc, fragmentSrc);
+const shaderLit = new Shader(context, vertexSrc, fragmentSrc);
+const shaderUnlit = new Shader(context, vertexSrc, fragmentUnlitSrc);
 const camera = new PerspectiveCamera(60, context.canvas.width / context.canvas.height);
 
-const scene = new Scene(shader);
+const scene = new Scene();
 
 const monkeyModel = await fetchFile("./mesh/monkey.obj");
 const monkey = await Mesh.fromObj(context, monkeyModel);
 monkey.color = [1.0, 1.0, 1.0];
+monkey.assignShader(shaderLit);
 
 const cubeModel = await fetchFile("./mesh/cube.obj");
 const cube1 = await Mesh.fromObj(context, cubeModel);
 cube1.position = [-3.0, -2.5, -3.0];
+cube1.assignShader(shaderUnlit);
 
 const cube2 = await Mesh.fromObj(context, cubeModel);
 cube2.position = [3.0, -2.5, -3.0];
+cube2.assignShader(shaderUnlit);
 
 const fumo = await Texture.fromUrl(context, "./texture/fumo.png");
 cube1.texture = fumo;
@@ -46,6 +51,7 @@ const plane = await Mesh.fromObj(context, planeModel);
 plane.color = [0.5, 0.5, 0.5];
 plane.scale = [25.0, 1.0, 25.0];
 plane.position = [0.0, -2.5, 0.0];
+plane.assignShader(shaderLit);
 
 const player = new Player(canvas);
 player.position[2] = 5.0;
@@ -60,8 +66,6 @@ scene.addMesh(cube2);
 scene.addLight(new Light([2, 1, -7], [1.0, 0.8, 0.7], 1.0, 24.0));
 scene.addLight(new Light([-3, 1, -2], [0.4, 0.6, 1.0], 1.5, 16.0));
 scene.addLight(new Light([ 0, 1, 1], [0.2, 1.0, 0.4], 0.8, 16.0));
-
-renderer.setupShader(shader); // TEMP
 
 function frame(time)
 {

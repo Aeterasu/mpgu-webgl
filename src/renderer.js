@@ -1,8 +1,5 @@
 export class Renderer
 {
-	context;
-	shader;
-
 	initRenderer()
 	{
 		this.canvas = document.getElementById("canvas");
@@ -30,41 +27,62 @@ export class Renderer
 		return this.context;
 	}
 
-	setupShader(shader)
-	{
-		this.shader = shader;
-	}
-
 	renderScene(scene, camera)
 	{
 		const context = this.context;
-		const shader = this.shader;
 
 		context.clear(context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
 
-		shader.bind();
-		shader.setMat4("uView", camera.viewMatrix);
-		shader.setMat4("uProjection", camera.projectionMatrix);
+		let activeShader = null;
 
-		const lights = scene.lights;
-		shader.setInt("uLightCount", lights.length);
+		const sorted = [...scene.objects].sort((a, b) => {
+			if (a.shader === b.shader)
+			{
+				return 0;
+			}
 
-		for (let i = 0; i < lights.length; i++)
+			return a.shader < b.shader ? -1 : 1;
+		});
+
+		for (const mesh of sorted)
 		{
-			const l = lights[i];
-			const prefix = `uLights[${i}]`;
+			const shader = mesh.shader;
+			if (!shader)
+			{
+				continue;
+			}
 
-			shader.setVec3(`${prefix}.position`, l.position);
-			shader.setVec3(`${prefix}.color`, l.color);
-			shader.setFloat(`${prefix}.intensity`, l.intensity);
-			shader.setFloat(`${prefix}.radius`, l.radius);
-		}
+			if (shader !== activeShader)
+			{
+				if (activeShader)
+				{
+					activeShader.unbind();
+				}
 
-		for (const mesh of scene.objects)
-		{
+				shader.bind();
+				activeShader = shader;
+
+				shader.setMat4("uView", camera.viewMatrix);
+				shader.setMat4("uProjection", camera.projectionMatrix);
+				shader.setVec3("uAmbientLightColor", scene.ambientLightColor);
+
+				const lights = scene.lights;
+				shader.setInt("uLightCount", lights.length);
+
+				for (let i = 0; i < lights.length; i++)
+				{
+					const l = lights[i];
+					const prefix = `uLights[${i}]`;
+
+					shader.setVec3 (`${prefix}.position`, l.position);
+					shader.setVec3 (`${prefix}.color`, l.color);
+					shader.setFloat(`${prefix}.intensity`, l.intensity);
+					shader.setFloat(`${prefix}.radius`, l.radius);
+				}
+			}
+
 			shader.setMat4("uModel", mesh.modelMatrix);
 			shader.setVec3("uObjectColor", mesh.color);
-			shader.setVec3("uAmbientLightColor", scene.ambientLightColor);
 
 			if (mesh.texture)
 			{
@@ -87,6 +105,6 @@ export class Renderer
 			}
 		}
 
-		shader.unbind();        
+		if (activeShader) activeShader.unbind();
 	}
 }

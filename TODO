@@ -7,7 +7,7 @@
 
 + wasd controls
 + textures
-- shader per object
++ shader per object
 + configurable ambient light color
 + multiple lights
 + configurable light radius
