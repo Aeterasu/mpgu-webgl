@@ -14,7 +14,6 @@ struct PointLight
 uniform PointLight uLights[MAX_LIGHTS];
 uniform int uLightCount;
 
-uniform vec3 uCameraPos;
 uniform vec3 uObjectColor;
 
 uniform vec3 uAmbientLightColor;
@@ -24,39 +23,30 @@ in vec3 vWorldPos;
 
 out vec4 fragColor;
 
-vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
+vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos)
 {
     vec3 toLight = light.position - fragPos;
     float dist = length(toLight);
     vec3 lightDir = normalize(toLight);
 
-    // attenuation
     float attenuation = clamp(1.0 - (dist / light.radius), 0.0, 1.0);
     attenuation = attenuation * attenuation;
 
-    // diffuse
     float diff = max(dot(normal, lightDir), 0.0);
     vec3 diffuse = diff * light.color * light.intensity;
 
-    // specular
-    vec3 halfway = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(normal, halfway), 0.0), 32.0);
-    vec3 specular = spec * light.color * light.intensity;
-
-    return (diffuse + specular) * attenuation;
+    return diffuse * attenuation;
 }
 
 void main()
 {
     vec3 normal = normalize(vNormal);
-    vec3 viewDir = normalize(uCameraPos - vWorldPos);
 
-    // ambient - baseline light so nothing is pure black
     vec3 result = uAmbientLightColor * uObjectColor;
 
     for (int i = 0; i < uLightCount; i++)
     {
-        result += calcPointLight(uLights[i], normal, vWorldPos, viewDir) * uObjectColor;
+        result += calcPointLight(uLights[i], normal, vWorldPos) * uObjectColor;
     }
 
     fragColor = vec4(result, 1.0);
