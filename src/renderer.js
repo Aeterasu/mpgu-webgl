@@ -1,4 +1,6 @@
 import { ShadowMap } from "./shadow_map.js";
+import { RenderTarget } from "./render_target.js";
+import { FullscreenQuad } from "./fullscreen_quad.js";
 
 export class Renderer
 {
@@ -26,15 +28,47 @@ export class Renderer
 		this.context.cullFace(this.context.BACK);
 		this.context.frontFace(this.context.CCW);
 
+		this.pixelArt = false;
+    	this.pixelScale = 1;
+
+		this.screenQuad = new FullscreenQuad(this.context);
+        this.rebuildRenderTarget();
+
 		this.shadowMap = new ShadowMap(this.context);
 
 		return this.context;
 	}
 
+    setupBlitShader(shader)
+    {
+        this.blitShader = shader;
+    }
+
 	setupShadowShader(shader)
 	{
 		this.shadowShader = shader;
 	}
+
+	setPixelArt(toggle, scale = 4)
+	{
+		this.pixelArt = toggle;
+    	this.pixelScale = scale;
+
+		this.rebuildRenderTarget();
+	}
+
+    rebuildRenderTarget()
+    {
+        if (this.renderTarget)
+		{
+			this.renderTarget.destroy();
+		}
+
+        const w = Math.floor(this.context.canvas.width  / this.pixelScale);
+        const h = Math.floor(this.context.canvas.height / this.pixelScale);
+
+        this.renderTarget = new RenderTarget(this.context, w, h);
+    }
 
 	renderScene(scene, camera)
 	{
@@ -71,8 +105,18 @@ export class Renderer
 			context.bindFramebuffer(context.FRAMEBUFFER, null);
 			context.viewport(0, 0, context.canvas.width, context.canvas.height);
 		}
-		
-			context.clear(context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
+
+		if (this.pixelArt)
+        {
+            // render into low res target instead of big fancy canvas
+            this.renderTarget.bindForWriting();
+        }
+        else
+        {
+            context.bindFramebuffer(context.FRAMEBUFFER, null);
+            context.viewport(0, 0, context.canvas.width, context.canvas.height);
+            context.clear(context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
+        }
 			
 		let activeShader = null;
 
@@ -85,7 +129,7 @@ export class Renderer
 			return a.shader < b.shader ? -1 : 1;
 		});
 
-		for (const mesh of scene.objects)
+		for (const mesh of sorted)
 		{
 			const shader = mesh.shader;
 			
@@ -165,5 +209,25 @@ export class Renderer
 		{
 			activeShader.unbind();
 		}
+
+        if (this.pixelArt)
+        {
+            // back to canvas
+            context.bindFramebuffer(context.FRAMEBUFFER, null);
+            context.viewport(0, 0, context.canvas.width, context.canvas.height);
+            context.clear(context.COLOR_BUFFER_BIT);
+
+            // disable depth test for a fullscreen quad
+            context.disable(context.DEPTH_TEST);
+
+            this.blitShader.bind();
+            this.renderTarget.bindColorForReading(2);
+            this.blitShader.setInt("uScreen", 2);
+            this.screenQuad.draw();
+            this.blitShader.unbind();
+
+            // restore depth test lest we find ourselves in a pickle
+            context.enable(context.DEPTH_TEST);
+        }
 	}
 }

@@ -26,6 +26,11 @@ const shadowFragSrc = await fetchFile('./shader/shadow_frag.glsl');
 const shadowShader = new Shader(context, shadowVertSrc, shadowFragSrc);
 renderer.setupShadowShader(shadowShader);
 
+const blitVert = await fetchFile('./shader/blit_vert.glsl');
+const blitFrag = await fetchFile('./shader/blit_frag.glsl');
+const blitShader = new Shader(context, blitVert, blitFrag);
+renderer.setupBlitShader(blitShader);
+
 const shaderLit = new Shader(context, vertexSrc, fragmentSrc);
 const shaderUnlit = new Shader(context, vertexSrc, fragmentUnlitSrc);
 const camera = new PerspectiveCamera(60, context.canvas.width / context.canvas.height);
@@ -79,6 +84,8 @@ sun.intensity = 1.0;
 sun.rotation = [0.8, 0.4, 0.0]; // pitch down, rotated on yaw
 
 scene.directionalLight = sun;
+
+renderer.setPixelArt(true, 3)
 
 function frame(time)
 {

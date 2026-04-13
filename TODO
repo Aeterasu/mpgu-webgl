@@ -14,7 +14,7 @@
 + directional light ?
 + shadows - toggleable for the scene
 - affine vertex jitter
-- pixel artsy rendering
++ pixel artsy rendering
 - cpu particles
 + backface culling
 - debug performance draw
