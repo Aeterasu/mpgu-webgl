@@ -31,6 +31,9 @@ export class Renderer
 		this.pixelArt = false;
     	this.pixelScale = 1;
 
+		this.jitter = false;
+		this.jitterResolution = 240;
+
 		this.screenQuad = new FullscreenQuad(this.context);
         this.rebuildRenderTarget();
 
@@ -55,6 +58,12 @@ export class Renderer
     	this.pixelScale = scale;
 
 		this.rebuildRenderTarget();
+	}
+
+	setPolygonJitter(toggle, resolution = 240)
+	{
+		this.jitter = toggle;
+    	this.jitterResolution = resolution;
 	}
 
     rebuildRenderTarget()
@@ -148,14 +157,17 @@ export class Renderer
 				shader.setMat4("uProjection", camera.projectionMatrix);
 				shader.setVec3("uAmbientLightColor", scene.ambientLightColor);
 
+				shader.setInt("uJitter", this.jitter ? 1 : 0);
+    			shader.setFloat("uJitterResolution", this.jitterResolution);
+
 				// directional light + shadow map
 				if (dirLight)
 				{
-					shader.setInt  ("uHasDirLight",        1);
-					shader.setVec3 ("uDirLightDirection",  dirLight.direction);
-					shader.setVec3 ("uDirLightColor",      dirLight.color);
-					shader.setFloat("uDirLightIntensity",  dirLight.intensity);
-					shader.setMat4 ("uLightSpaceMatrix",   dirLight.lightSpaceMatrix);
+					shader.setInt("uHasDirLight", 1);
+					shader.setVec3("uDirLightDirection", dirLight.direction);
+					shader.setVec3("uDirLightColor", dirLight.color);
+					shader.setFloat("uDirLightIntensity", dirLight.intensity);
+					shader.setMat4("uLightSpaceMatrix", dirLight.lightSpaceMatrix);
 
 					this.shadowMap.bindForReading(1); // unit 1
 					shader.setInt("uShadowMap", 1);
@@ -174,8 +186,8 @@ export class Renderer
 					const l = lights[i];
 					const prefix = `uLights[${i}]`;
 
-					shader.setVec3 (`${prefix}.position`, l.position);
-					shader.setVec3 (`${prefix}.color`, l.color);
+					shader.setVec3(`${prefix}.position`, l.position);
+					shader.setVec3(`${prefix}.color`, l.color);
 					shader.setFloat(`${prefix}.intensity`, l.intensity);
 					shader.setFloat(`${prefix}.radius`, l.radius);
 				}

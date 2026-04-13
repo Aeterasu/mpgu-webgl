@@ -86,6 +86,7 @@ sun.rotation = [0.8, 0.4, 0.0]; // pitch down, rotated on yaw
 scene.directionalLight = sun;
 
 renderer.setPixelArt(true, 3)
+renderer.setPolygonJitter(true, 200);
 
 function frame(time)
 {
