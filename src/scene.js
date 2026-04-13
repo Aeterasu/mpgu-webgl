@@ -3,6 +3,7 @@ export class Scene
     objects = [];
     lights = [];
     ambientLightColor = [0.0, 0.0, 0.0];
+    directionalLight = null;
 
     setAmbientLightColor(color)
     {
@@ -27,5 +28,10 @@ export class Scene
     removeLight(light)
     { 
         this.lights = this.lights.filter(o => o !== light);
+    }
+
+    setDirectionalLight(light)
+    {
+        this.directionalLight = light;
     }
 }

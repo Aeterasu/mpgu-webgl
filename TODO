@@ -11,7 +11,7 @@
 + configurable ambient light color
 + multiple lights
 + configurable light radius
-- directional light ?
++ directional light ?
 - shadows - toggleable for the scene
 - affine vertex jitter
 - pixel artsy rendering

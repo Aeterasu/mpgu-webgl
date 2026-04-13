@@ -3,6 +3,7 @@ import { Shader } from "./shader.js";
 import { Mesh } from "./mesh.js"
 import { Scene } from "./scene.js";
 import { Light } from "./light.js";
+import { DirectionalLight } from "./directional_light.js";
 import { Texture } from "./texture.js";
 import { PerspectiveCamera } from "./perspective_camera.js"
 import { Player } from "./player.js"
@@ -19,6 +20,11 @@ let deltaTime = 0.0;
 const vertexSrc = await fetchFile('./shader/vert.glsl');
 const fragmentSrc = await fetchFile('./shader/frag.glsl');
 const fragmentUnlitSrc = await fetchFile('./shader/frag_unlit.glsl');
+
+const shadowVertSrc = await fetchFile('./shader/shadow_vert.glsl');
+const shadowFragSrc = await fetchFile('./shader/shadow_frag.glsl');
+const shadowShader = new Shader(context, shadowVertSrc, shadowFragSrc);
+renderer.setupShadowShader(shadowShader);
 
 const shaderLit = new Shader(context, vertexSrc, fragmentSrc);
 const shaderUnlit = new Shader(context, vertexSrc, fragmentUnlitSrc);
@@ -66,6 +72,13 @@ scene.addMesh(cube2);
 scene.addLight(new Light([2, 1, -7], [1.0, 0.8, 0.7], 1.0, 24.0));
 scene.addLight(new Light([-3, 1, -2], [0.4, 0.6, 1.0], 1.5, 16.0));
 scene.addLight(new Light([ 0, 1, 1], [0.2, 1.0, 0.4], 0.8, 16.0));
+
+const sun = new DirectionalLight();
+sun.color = [1.0, 0.95, 0.8];
+sun.intensity = 1.0;
+sun.rotation = [0.8, 0.4, 0.0]; // pitch down, rotated on yaw
+
+scene.setDirectionalLight(sun);
 
 function frame(time)
 {

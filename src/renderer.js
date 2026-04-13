@@ -1,3 +1,5 @@
+import { ShadowMap } from "./shadow_map.js";
+
 export class Renderer
 {
 	initRenderer()
@@ -24,15 +26,51 @@ export class Renderer
 		this.context.cullFace(this.context.BACK);
 		this.context.frontFace(this.context.CCW);
 
+		this.shadowMap = new ShadowMap(this.context);
+
 		return this.context;
+	}
+
+	setupShadowShader(shader)
+	{
+		this.shadowShader = shader;
 	}
 
 	renderScene(scene, camera)
 	{
 		const context = this.context;
-
-		context.clear(context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
-
+		const dirLight = scene.directionalLight;
+		
+		if (dirLight && this.shadowShader)
+		{
+			dirLight.buildLightSpaceMatrix();
+			
+			this.shadowMap.bindForWriting();
+			context.viewport(0, 0, this.shadowMap.width, this.shadowMap.height);
+			
+			// front face culling during shadow pass reduces peter panning
+			context.cullFace(context.FRONT);
+			
+			this.shadowShader.bind();
+			this.shadowShader.setMat4("uLightSpaceMatrix", dirLight.lightSpaceMatrix);
+			
+			for (const mesh of scene.objects)
+			{
+				this.shadowShader.setMat4("uModel", mesh.modelMatrix);
+				context.bindVertexArray(mesh.vao);
+				context.drawElements(context.TRIANGLES, mesh.indexCount, context.UNSIGNED_SHORT, 0);
+				context.bindVertexArray(null);
+			}
+			
+			this.shadowShader.unbind();
+			context.cullFace(context.BACK);
+			
+			context.bindFramebuffer(context.FRAMEBUFFER, null);
+			context.viewport(0, 0, context.canvas.width, context.canvas.height);
+		}
+		
+			context.clear(context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
+			
 		let activeShader = null;
 
 		const sorted = [...scene.objects].sort((a, b) => {
@@ -44,9 +82,10 @@ export class Renderer
 			return a.shader < b.shader ? -1 : 1;
 		});
 
-		for (const mesh of sorted)
+		for (const mesh of scene.objects)
 		{
 			const shader = mesh.shader;
+			
 			if (!shader)
 			{
 				continue;
@@ -54,11 +93,7 @@ export class Renderer
 
 			if (shader !== activeShader)
 			{
-				if (activeShader)
-				{
-					activeShader.unbind();
-				}
-
+				if (activeShader) activeShader.unbind();
 				shader.bind();
 				activeShader = shader;
 
@@ -66,6 +101,24 @@ export class Renderer
 				shader.setMat4("uProjection", camera.projectionMatrix);
 				shader.setVec3("uAmbientLightColor", scene.ambientLightColor);
 
+				// directional light + shadow map
+				if (dirLight)
+				{
+					shader.setInt  ("uHasDirLight",        1);
+					shader.setVec3 ("uDirLightDirection",  dirLight.direction);
+					shader.setVec3 ("uDirLightColor",      dirLight.color);
+					shader.setFloat("uDirLightIntensity",  dirLight.intensity);
+					shader.setMat4 ("uLightSpaceMatrix",   dirLight.lightSpaceMatrix);
+
+					this.shadowMap.bindForReading(1); // unit 1
+					shader.setInt("uShadowMap", 1);
+				}
+				else
+				{
+					shader.setInt("uHasDirLight", 0);
+				}
+
+				// Point lights
 				const lights = scene.lights;
 				shader.setInt("uLightCount", lights.length);
 
@@ -105,6 +158,9 @@ export class Renderer
 			}
 		}
 
-		if (activeShader) activeShader.unbind();
+		if (activeShader)
+		{
+			activeShader.unbind();
+		}
 	}
 }
