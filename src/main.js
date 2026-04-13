@@ -62,7 +62,7 @@ plane.assignShader(shaderLit);
 const player = new Player(canvas);
 player.position[2] = 5.0;
 
-scene.setAmbientLightColor([0.0, 0.0, 0.2]);
+scene.ambientLightColor = [0.0, 0.0, 0.2];
 
 scene.addMesh(monkey);
 scene.addMesh(plane);
@@ -78,7 +78,7 @@ sun.color = [1.0, 0.95, 0.8];
 sun.intensity = 1.0;
 sun.rotation = [0.8, 0.4, 0.0]; // pitch down, rotated on yaw
 
-scene.setDirectionalLight(sun);
+scene.directionalLight = sun;
 
 function frame(time)
 {
@@ -102,6 +102,8 @@ function frame(time)
     cube2.rotation[0] = time * -0.001;
     cube2.rotation[1] = time * -0.001;
     cube2.position[1] = -0.5 + Math.sin(time * 0.003) * 0.3;
+
+    scene.useShadows = true;
 
     player.update(deltaTime / 1000.0);
 

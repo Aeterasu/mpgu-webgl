@@ -5,10 +5,7 @@ export class Scene
     ambientLightColor = [0.0, 0.0, 0.0];
     directionalLight = null;
 
-    setAmbientLightColor(color)
-    {
-        this.ambientLightColor = color;
-    }
+    useShadows = false;
 
     addMesh(mesh)
     {
@@ -28,10 +25,5 @@ export class Scene
     removeLight(light)
     { 
         this.lights = this.lights.filter(o => o !== light);
-    }
-
-    setDirectionalLight(light)
-    {
-        this.directionalLight = light;
     }
 }

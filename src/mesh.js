@@ -6,6 +6,8 @@ export class Mesh
 	rotation = vec3.fromValues(0, 0, 0);
 	scale = vec3.fromValues(1, 1, 1);
 	color = [1.0, 1.0, 1.0];
+
+	castShadows = true;
 	
 	#modelMatrix = mat4.create(); // identity
 

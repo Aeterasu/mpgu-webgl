@@ -12,7 +12,7 @@
 + multiple lights
 + configurable light radius
 + directional light ?
-- shadows - toggleable for the scene
++ shadows - toggleable for the scene
 - affine vertex jitter
 - pixel artsy rendering
 - cpu particles

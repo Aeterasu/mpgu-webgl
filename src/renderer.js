@@ -41,7 +41,7 @@ export class Renderer
 		const context = this.context;
 		const dirLight = scene.directionalLight;
 		
-		if (dirLight && this.shadowShader)
+		if (dirLight && this.shadowShader && scene.useShadows)
 		{
 			dirLight.buildLightSpaceMatrix();
 			
@@ -56,10 +56,13 @@ export class Renderer
 			
 			for (const mesh of scene.objects)
 			{
-				this.shadowShader.setMat4("uModel", mesh.modelMatrix);
-				context.bindVertexArray(mesh.vao);
-				context.drawElements(context.TRIANGLES, mesh.indexCount, context.UNSIGNED_SHORT, 0);
-				context.bindVertexArray(null);
+				if (mesh.castShadows)
+				{
+					this.shadowShader.setMat4("uModel", mesh.modelMatrix);
+					context.bindVertexArray(mesh.vao);
+					context.drawElements(context.TRIANGLES, mesh.indexCount, context.UNSIGNED_SHORT, 0);
+					context.bindVertexArray(null);
+				}
 			}
 			
 			this.shadowShader.unbind();
