@@ -128,7 +128,7 @@ export class Renderer
         }
 			
 		let activeShader = null;
-
+		
 		const sorted = [...scene.objects].sort((a, b) => {
 			if (a.shader === b.shader)
 			{

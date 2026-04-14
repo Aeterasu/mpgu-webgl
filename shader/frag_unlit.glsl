@@ -24,6 +24,9 @@ in vec3 vNormal;
 in vec3 vWorldPos;
 in vec2 vUV;
 
+uniform float uTime;
+uniform vec3 uCameraPos;
+
 out vec4 fragColor;
 
 void main()

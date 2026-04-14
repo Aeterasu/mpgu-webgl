@@ -24,6 +24,9 @@ in vec3 vNormal;
 in vec3 vWorldPos;
 in vec2 vUV;
 
+uniform float uTime;
+uniform vec3 uCameraPos;
+
 uniform sampler2D uShadowMap;
 uniform mat4 uLightSpaceMatrix;
 
@@ -31,7 +34,6 @@ uniform vec3 uDirLightDirection;
 uniform vec3 uDirLightColor;
 uniform float uDirLightIntensity;
 uniform int uHasDirLight;
-
 
 out vec4 fragColor;
 

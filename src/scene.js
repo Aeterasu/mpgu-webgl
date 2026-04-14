@@ -7,6 +7,15 @@ export class Scene
 
     useShadows = false;
 
+    constructor()
+    {
+        this.objects = [];
+        this.lights = [];
+        this.ambientLightColor = [0.0, 0.0, 0.0];
+        this.directionalLight = null;
+        this.useShadows = false;
+    }
+
     addMesh(mesh)
     {
         this.objects.push(mesh);
