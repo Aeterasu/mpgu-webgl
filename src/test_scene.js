@@ -4,6 +4,7 @@ import { Light } from "./light.js";
 import { DirectionalLight } from "./directional_light.js";
 import { Texture } from "./texture.js";
 import { Shader } from "./shader.js";
+import { ParticleSystem } from "./particle_system.js";
 
 import { fetchFile } from "./file_loader.js"
 
@@ -12,6 +13,8 @@ let cube1 = null;
 let cube2 = null;
 
 let sun = null;
+
+let particles = null;
 
 let tiles = [];
 
@@ -38,9 +41,7 @@ export async function generateTestScene(renderer, shaderLit, shaderUnlit)
     
     const fumo = await Texture.fromUrl(context, "./texture/fumo.png");
     cube1.texture = fumo;
-    
-    const cinema = await Texture.fromUrl(context, "./texture/cinema.png");
-    cube2.texture = cinema;
+    cube2.texture = fumo;
 
     const tileTexture = await Texture.fromUrl(context, "./texture/tile.png");
     
@@ -91,6 +92,23 @@ export async function generateTestScene(renderer, shaderLit, shaderUnlit)
 
     scene.directionalLight = sun;
 
+    const updateVert = await fetchFile('./shader/particle_update_vert.glsl');
+    const updateFrag = await fetchFile('./shader/particle_update_frag.glsl');
+    const updateShader = new Shader(context, updateVert, updateFrag,
+        ['vPosition', 'vVelocity', 'vLifetime', 'vMaxLife'] // must match shader out names
+    );
+
+    const particleVert = await fetchFile('./shader/particle_vert.glsl');
+    const particleFrag = await fetchFile('./shader/particle_frag.glsl');
+    const particleShader = new Shader(context, particleVert, particleFrag);
+
+    particles = new ParticleSystem(context, 1_000);
+    particles.updateShader = updateShader;
+    particles.renderShader = particleShader;
+    particles.position = [0, 6.5, 0];
+
+    scene.addParticles(particles);
+
     scene.update = update;
 
     renderer.setPixelArt(true, 3)
@@ -112,6 +130,8 @@ function update(time, delta)
     cube2.rotation[0] = time * -0.001;
     cube2.rotation[1] = time * -0.001;
     cube2.position[1] = -0.5 + Math.sin(time * 0.003) * 0.3;
+
+    particles.update(delta / 1000.0);
 
     for (const tile of tiles)
     {

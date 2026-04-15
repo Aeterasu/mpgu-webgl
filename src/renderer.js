@@ -222,6 +222,20 @@ export class Renderer
 			activeShader.unbind();
 		}
 
+		for (const particle of scene.particles)
+		{
+			particle.renderShader.bind();
+			particle.renderShader.setMat4("uView", camera.viewMatrix);
+			particle.renderShader.setMat4("uProjection", camera.projectionMatrix);
+			particle.renderShader.setFloat("uPointSize", particle.pointSize);
+
+			context.bindVertexArray(particle.vaos[particle.current]);
+			context.drawArrays(context.POINTS, 0, particle.count);
+			context.bindVertexArray(null);
+
+			particle.renderShader.unbind();
+		}
+
         if (this.pixelArt)
         {
             // back to canvas

@@ -4,13 +4,13 @@ export class Shader
     program;
     uniformCache = {};
 
-    constructor(context, vertSrc, fragSrc) 
+    constructor(context, vertSrc, fragSrc, transformFeedbackVaryings = null) 
     {
         this.context = context;
-        this.program = this.compile(vertSrc, fragSrc);
+        this.program = this.compile(vertSrc, fragSrc, transformFeedbackVaryings);
     }
 
-    compile(vertSrc, fragSrc)
+    compile(vertSrc, fragSrc, transformFeedbackVaryings = null)
     {
         const context = this.context;
 
@@ -20,6 +20,16 @@ export class Shader
         const program = context.createProgram();
         context.attachShader(program, vert);
         context.attachShader(program, frag);
+
+        if (transformFeedbackVaryings)
+        {
+            context.transformFeedbackVaryings(
+                program,
+                transformFeedbackVaryings,
+                context.INTERLEAVED_ATTRIBS // pack all outputs into one buffer
+            );
+        }
+
         context.linkProgram(program);
 
         if (!context.getProgramParameter(program, context.LINK_STATUS))

@@ -2,6 +2,7 @@ export class Scene
 {
     objects = [];
     lights = [];
+    particles = [];
     ambientLightColor = [0.0, 0.0, 0.0];
     directionalLight = null;
 
@@ -11,6 +12,7 @@ export class Scene
     {
         this.objects = [];
         this.lights = [];
+        this.particles = [];
         this.ambientLightColor = [0.0, 0.0, 0.0];
         this.directionalLight = null;
         this.useShadows = false;
@@ -34,5 +36,15 @@ export class Scene
     removeLight(light)
     { 
         this.lights = this.lights.filter(o => o !== light);
+    }
+
+    addParticles(particleSystem)
+    {
+        this.particles.push(particleSystem);
+    }
+
+    removeParticles(particleSystem)
+    {
+        this.particles = this.particles.filter(o => o !== particleSystem);
     }
 }
