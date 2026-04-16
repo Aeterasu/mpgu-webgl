@@ -7,11 +7,21 @@ html, body
     overflow: hidden;
 }
 
+#fps
+{
+    top: 10px;
+    left: 20px;
+}
+
 #ui
 {
-    position: absolute;
-    top: 40px;
+    top: 60px;
     left: 20px;
+}
+
+.ui-panel
+{
+    position: absolute;
 
     padding: 12px 14px;
     border-radius: 10px;
@@ -20,7 +30,7 @@ html, body
     backdrop-filter: blur(10px);
 
     color: white;
-    font-family: sans-serif;
+    font-family: monospace;
 
     display: flex;
     flex-direction: column;
