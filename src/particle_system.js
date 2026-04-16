@@ -119,4 +119,23 @@ export class ParticleSystem
         this.buffers.forEach(b => context.deleteBuffer(b));
         context.deleteTransformFeedback(this.transformFeedback);
     }
+
+    setCount(newCount)
+    {
+        if (newCount === this.count)
+        {
+            return;
+        }
+
+        const context = this.context;
+
+        this.vaos.forEach(v => context.deleteVertexArray(v));
+        this.buffers.forEach(b => context.deleteBuffer(b));
+
+        this.current = 0;
+
+        this.count = newCount;
+
+        this.setup();
+    }
 }

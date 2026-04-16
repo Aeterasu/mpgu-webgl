@@ -21,6 +21,8 @@ let particles = null;
 
 let tiles = [];
 
+let particleAmount = 1_000;
+
 export async function generateTestScene(renderer, shaderLit, shaderUnlit)
 {
     const context = renderer.context;
@@ -140,7 +142,7 @@ export async function generateTestScene(renderer, shaderLit, shaderUnlit)
     const particleFrag = await fetchFile('./shader/particle_frag.glsl');
     const particleShader = new Shader(context, particleVert, particleFrag);
 
-    particles = new ParticleSystem(context, 2_000);
+    particles = new ParticleSystem(context, particleAmount);
     particles.updateShader = updateShader;
     particles.renderShader = particleShader;
     particles.position = [0, 4.5, 0];
@@ -151,6 +153,20 @@ export async function generateTestScene(renderer, shaderLit, shaderUnlit)
 
     renderer.setPixelArt(true, 2)
     renderer.setPolygonJitter(true, 200);
+
+    // particle count
+
+    const particleAmountInput = document.getElementById("particleAmount");
+
+    particleAmountInput.addEventListener("input", (e) => {
+        const v = parseInt(e.target.value);
+
+        if (!Number.isNaN(v))
+        {
+            particleAmount = v;
+            particles.setCount(particleAmount);
+        }
+    });
 
     return scene;
 }
