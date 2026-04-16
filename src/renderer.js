@@ -149,13 +149,18 @@ export class Renderer
 
 			if (shader !== activeShader)
 			{
-				if (activeShader) activeShader.unbind();
+				if (activeShader)
+				{
+					activeShader.unbind();
+				}
 				shader.bind();
 				activeShader = shader;
 
 				shader.setMat4("uView", camera.viewMatrix);
 				shader.setMat4("uProjection", camera.projectionMatrix);
 				shader.setVec3("uAmbientLightColor", scene.ambientLightColor);
+
+				shader.setFloat("uTime", performance.now() * 0.001);
 
 				shader.setInt("uJitter", this.jitter ? 1 : 0);
     			shader.setFloat("uJitterResolution", this.jitterResolution);

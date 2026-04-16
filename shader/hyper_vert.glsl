@@ -14,9 +14,9 @@ uniform float uJitterResolution;
 
 uniform float uTime;
 
-out vec3 vNormal;
 out vec3 vWorldPos;
-out vec2 vUV;
+out vec3 vWorldNormal;
+out vec3 vWorldEye;
 
 vec4 snapToGrid(vec4 clipPos, float resolution)
 {
@@ -29,8 +29,9 @@ void main()
 {
     vec4 worldPos = uModel * vec4(aPosition, 1.0);
     vWorldPos = worldPos.xyz;
-    vNormal = mat3(transpose(inverse(uModel))) * aNormal;
-    vUV = aUV;
+    vWorldNormal = mat3(transpose(inverse(uModel))) * aNormal;
+
+    vWorldEye = (inverse(uView) * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
 
     vec4 clipPos = uProjection * uView * worldPos;
 

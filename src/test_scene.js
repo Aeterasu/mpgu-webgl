@@ -31,7 +31,22 @@ export async function generateTestScene(renderer, shaderLit, shaderUnlit)
     const monkeyModel = await fetchFile("./mesh/monkey.obj");
     monkey = await Mesh.fromObj(context, monkeyModel);
     monkey.color = [1.0, 1.0, 1.0];
-    monkey.assignShader(shaderLit);
+
+    const hyperVertSrc = await fetchFile('./shader/vert.glsl');
+    const hyperFragSrc = await fetchFile('./shader/hyper_frag.glsl');
+    const hyperShader = new Shader(context, hyperVertSrc, hyperFragSrc);
+
+    hyperShader.bind();
+    hyperShader.setVec3("uBaseColor", [1.0, 1.0, 1.0]);
+    hyperShader.setVec3("uGradientBasis", [3.0, 3.0, 3.0]);
+    hyperShader.setVec3("uGradientBasisDistort", [0.0, 0.0, 0.0]);
+    hyperShader.setFloat("uGradientBasisSpeed", 0.0);
+    hyperShader.setFloat("uRefractionSplit", 2.0);
+    hyperShader.setFloat("uRefractionSplitPower", 1.0);
+    hyperShader.setFloat("uRefractionAffect", 0.8);
+    hyperShader.unbind();
+
+    monkey.assignShader(hyperShader);
     
     scene.addMesh(monkey);
     
@@ -55,11 +70,11 @@ export async function generateTestScene(renderer, shaderLit, shaderUnlit)
     }
 
     cube1 = await Mesh.fromObj(context, cubeModel);
-    cube1.position = [-3.0, -2.5, -3.0];
+    cube1.position = [-5.0, -2.5, -7.5];
     cube1.assignShader(shaderUnlit);
     
     cube2 = await Mesh.fromObj(context, cubeModel);
-    cube2.position = [3.0, -2.5, -3.0];
+    cube2.position = [5.0, -2.5, -7.5];
     cube2.assignShader(shaderUnlit);
     
     const fumo = await Texture.fromUrl(context, "./texture/fumo.png");

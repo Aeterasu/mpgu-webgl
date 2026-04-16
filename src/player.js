@@ -7,7 +7,7 @@ export class Player
 		this.position = [0, 0, 0];
 		this.rotation = [0, 0, 0];
 
-		this.moveSpeed = 8.0;
+		this.moveSpeed = 12.0;
 		this.mouseSensitivity = 0.002;
 
 		this.forward = false;
