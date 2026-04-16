@@ -151,8 +151,8 @@ export async function generateTestScene(renderer, shaderLit, shaderUnlit)
 
     scene.update = update;
 
-    renderer.setPixelArt(true, 2)
-    renderer.setPolygonJitter(true, 200);
+    renderer.setPixelArt(true, 3)
+    renderer.setPolygonJitter(true, 150);
 
     // particle count
 
