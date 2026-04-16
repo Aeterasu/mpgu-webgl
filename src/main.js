@@ -5,7 +5,6 @@ import { Player } from "./player.js"
 
 import { fetchFile } from "./file_loader.js"
 
-import { generateAutumnScene } from "./autumn.js";
 import { generateTestScene } from "./test_scene.js";
 
 const renderer = new Renderer();
@@ -36,9 +35,8 @@ const camera = new PerspectiveCamera(60, context.canvas.width / context.canvas.h
 const scene = await generateTestScene(renderer, shaderLit, shaderUnlit)
 
 const player = new Player(canvas);
-player.position[2] = 14.0;
-player.position[0] = 8.0;
-player.rotation[1] = -0.4;
+player.position = [0.0, 15.0, 40.0];
+player.rotation = [-0.5, 0.0, 0.0];
 
 function frame(time)
 {

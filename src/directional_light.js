@@ -7,7 +7,7 @@ export class DirectionalLight
 
     rotation  = [0.0, 0.0, 0.0];
 
-    shadowArea = 30.0;
+    shadowArea = 65.0;
     shadowNear = 0.1;
     shadowFar = 100.0;
 

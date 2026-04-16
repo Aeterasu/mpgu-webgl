@@ -14,6 +14,9 @@ export class Player
 		this.backward = false;
 		this.left = false;
 		this.right = false;
+		this.up = false;
+		this.down = false;
+
 		this.pointerLocked = false;
 
 		this.initInput();
@@ -60,6 +63,14 @@ export class Player
 			{
 				this.right = true;
 			}
+			if (e.code === "Space")
+			{
+				this.up = true;
+			}
+			if (e.code === "ShiftLeft")
+			{
+				this.down = true;
+			}
 		});
 
 		document.addEventListener("keyup", (e) => {
@@ -79,12 +90,18 @@ export class Player
 			{
 				this.right = false;
 			}
+			if (e.code === "Space")
+			{
+				this.up = false;
+			}
+			if (e.code === "ShiftLeft")
+			{
+				this.down = false;
+			}
 		});
 
-		// not too fond of context menus
 		this.canvas.addEventListener("contextmenu", (e) => e.preventDefault());
 
-		// pointer lock
 		this.canvas.addEventListener("click", () => {
 			this.canvas.requestPointerLock();
 		});
@@ -105,7 +122,6 @@ export class Player
 			this.rotation[1] += dx * this.mouseSensitivity;
 			this.rotation[0] -= dy * this.mouseSensitivity;
 
-			// clamp pitch to avoid flipping
 			const maxPitch = Math.PI / 2 - 0.01;
 			this.rotation[0] = Math.max(-maxPitch, Math.min(maxPitch, this.rotation[0]));
 		});
@@ -116,42 +132,57 @@ export class Player
 		const forward = this.getForwardVector();
 		const right = this.getRightVector();
 
-		let moveX = 0;
-		let moveZ = 0;
+		let move = [0, 0, 0];
 
 		if (this.forward)
 		{
-			moveX += forward[0];
-			moveZ += forward[2];
+			move[0] += forward[0];
+			move[1] += forward[1];
+			move[2] += forward[2];
 		}
 
 		if (this.backward)
 		{
-			moveX -= forward[0];
-			moveZ -= forward[2];
+			move[0] -= forward[0];
+			move[1] -= forward[1];
+			move[2] -= forward[2];
 		}
 
 		if (this.left)
 		{
-			moveX -= right[0];
-			moveZ -= right[2];
+			move[0] -= right[0];
+			move[1] -= right[1];
+			move[2] -= right[2];
 		}
 
 		if (this.right)
 		{
-			moveX += right[0];
-			moveZ += right[2];
+			move[0] += right[0];
+			move[1] += right[1];
+			move[2] += right[2];
 		}
 
-		const length = Math.hypot(moveX, moveZ);
+		if (this.up)
+		{
+			move[1] += 1;
+		}
+
+		if (this.down)
+		{
+			move[1] -= 1;
+		}
+
+		const length = Math.hypot(move[0], move[1], move[2]);
 		if (length > 0)
 		{
-			moveX /= length;
-			moveZ /= length;
+			move[0] /= length;
+			move[1] /= length;
+			move[2] /= length;
 		}
 
-		this.position[0] += moveX * this.moveSpeed * deltaTime;
-		this.position[2] += moveZ * this.moveSpeed * deltaTime;
+		this.position[0] += move[0] * this.moveSpeed * deltaTime;
+		this.position[1] += move[1] * this.moveSpeed * deltaTime;
+		this.position[2] += move[2] * this.moveSpeed * deltaTime;
 	}
 
 	getForwardVector()

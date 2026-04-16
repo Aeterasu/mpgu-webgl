@@ -12,6 +12,9 @@ let monkey = null;
 let cube1 = null;
 let cube2 = null;
 
+let movingCubes = [];
+let movingLights = [];
+
 let sun = null;
 
 let particles = null;
@@ -30,7 +33,27 @@ export async function generateTestScene(renderer, shaderLit, shaderUnlit)
     monkey.color = [1.0, 1.0, 1.0];
     monkey.assignShader(shaderLit);
     
+    scene.addMesh(monkey);
+    
+    // cubes
     const cubeModel = await fetchFile("./mesh/cube.obj");
+    
+    for (let i = 0; i < 8; i++)
+    {
+        let cube = await Mesh.fromObj(context, cubeModel);
+        cube.position = [0.0, -2.5, 0.0];
+        cube.assignShader(shaderUnlit);
+
+        movingCubes.push(cube);
+
+        scene.addMesh(cube);
+
+        let light = new Light([0.0, 0.0, 0.0], [1.0, 1.0, 1.0], 3.0, 15.0)
+        scene.addLight(light);
+
+        movingLights.push(light);
+    }
+
     cube1 = await Mesh.fromObj(context, cubeModel);
     cube1.position = [-3.0, -2.5, -3.0];
     cube1.assignShader(shaderUnlit);
@@ -69,6 +92,8 @@ export async function generateTestScene(renderer, shaderLit, shaderUnlit)
             
             tile.shader = shaderLit;
 
+            tile.castShadows = false;
+
             tile.texture = tileTexture;
             
             scene.addMesh(tile);
@@ -76,14 +101,12 @@ export async function generateTestScene(renderer, shaderLit, shaderUnlit)
     }
 
     scene.ambientLightColor = [0.1, 0.1, 0.1];
-
-    scene.addMesh(monkey);
     scene.addMesh(cube1);
     scene.addMesh(cube2);
 
-    scene.addLight(new Light([2, 1, -7], [1.0, 0.8, 0.7], 8.0, 24.0));
-    scene.addLight(new Light([-5, 1, -2], [0.4, 0.6, 1.0], 6.5, 16.0));
-    scene.addLight(new Light([7, 1, 4], [0.2, 1.0, 0.4], 1.8, 16.0));
+    scene.addLight(new Light([-5, 1, 3], [1.0, 0.8, 0.7], 4.0, 16.0));
+    scene.addLight(new Light([7, 1, 4], [0.4, 0.6, 1.0], 5.5, 16.0));
+    scene.addLight(new Light([2, 1, -7], [0.2, 1.0, 0.4], 1.8, 16.0));
 
     sun = new DirectionalLight();
     sun.color = [1.0, 1.0, 1.0];
@@ -102,16 +125,16 @@ export async function generateTestScene(renderer, shaderLit, shaderUnlit)
     const particleFrag = await fetchFile('./shader/particle_frag.glsl');
     const particleShader = new Shader(context, particleVert, particleFrag);
 
-    particles = new ParticleSystem(context, 1_000);
+    particles = new ParticleSystem(context, 2_000);
     particles.updateShader = updateShader;
     particles.renderShader = particleShader;
-    particles.position = [0, 6.5, 0];
+    particles.position = [0, 4.5, 0];
 
     scene.addParticles(particles);
 
     scene.update = update;
 
-    renderer.setPixelArt(true, 3)
+    renderer.setPixelArt(true, 2)
     renderer.setPolygonJitter(true, 200);
 
     return scene;
@@ -135,6 +158,23 @@ function update(time, delta)
 
     for (const tile of tiles)
     {
-        tile.position[1] = -2.5 + Math.sin((time + tile.id * 250.0) * 0.003) * 0.2;
+        tile.position[1] = -2.8 + Math.sin((time + tile.id * 250.0) * 0.003) * 0.4;
+    }
+
+    // animation
+    const N = movingCubes.length;
+    const radius = 24.0;
+    const speed = 0.001;
+
+    for (let i = 0; i < N; i++) {
+        const angle = time * speed + (i * Math.PI * 2) / N;
+
+        const x = Math.sin(angle) * radius;
+        const z = Math.cos(angle) * radius;
+
+        const pos = [x, 1, z];
+
+        movingCubes[i].position = pos;
+        movingLights[i].position = pos;
     }
 }

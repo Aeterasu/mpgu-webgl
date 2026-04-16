@@ -4,10 +4,10 @@ export class ShadowMap
     fbo;
     depthTexture;
 
-    width = 2048;
-    height = 2048;
+    width = 1024;
+    height = 1024;
 
-    constructor(context, width = 2048, height = 2048)
+    constructor(context, width = 1024, height = 1024)
     {
         this.context = context;
         this.width = width;
