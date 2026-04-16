@@ -151,7 +151,7 @@ export async function generateTestScene(renderer, shaderLit, shaderUnlit)
 
     scene.update = update;
 
-    renderer.setPixelArt(true, 3)
+    renderer.setPixelArt(true, 2)
     renderer.setPolygonJitter(true, 150);
 
     // particle count
@@ -206,6 +206,10 @@ function update(time, delta)
         const pos = [x, 1, z];
 
         movingCubes[i].position = pos;
+
+        movingCubes[i].rotation[0] = (time + (i * Math.PI * 2)) * 0.001;
+        movingCubes[i].rotation[1] = (time + (i * Math.PI * 2)) * 0.001;
+
         movingLights[i].position = pos;
     }
 }

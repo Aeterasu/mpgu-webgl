@@ -7,9 +7,9 @@ out vec4 fragColor;
 
 void main()
 {
-    vec3 color1 = vec3(1.0, 0.0, 0.302);
-    vec3 color2 = vec3(0.0, 0.894, 0.212);
-    vec3 color3 = vec3(0.161, 0.678, 1.0);
+    vec3 color1 = vec3(1.0f, 0.95f, 0.9f);
+    vec3 color2 = vec3(1.0f, 0.5f, 0.0f);
+    vec3 color3 = vec3(1.0f, 0.678, 1.0);
 
     vec3 finalRGB;
 
@@ -24,5 +24,5 @@ void main()
         finalRGB = mix(color2, color3, t);
     }
 
-    fragColor = vec4(finalRGB, vAlpha);
+    fragColor = vec4(finalRGB, 1.0);
 }

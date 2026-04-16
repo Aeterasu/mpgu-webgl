@@ -14,7 +14,7 @@ export class ParticleSystem
     renderShader = null;
 
     position = [0, 0, 0];
-    pointSize = 1.0;
+    pointSize = 0.5;
 
     constructor(context, count = 1000)
     {
