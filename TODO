@@ -15,10 +15,8 @@
 + shadows - toggleable for the scene
 + affine vertex jitter
 + pixel artsy rendering
-- cpu particles
++ gpu particles
 + backface culling
-- debug performance draw
-- scene 1 - autumn. flowing leaves particles. single directional light.
-- scene 2 - purple abyss. rain particles. nice pretty tiles
-- scene 3 - plane, moving cubes with lights on them. particles
++ scene 1 - test scene. plane, moving cubes with lights on them. particles
+- scene 2 - autumn. flowing leaves particles. single directional light.
 - code cleanup
