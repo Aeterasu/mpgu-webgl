@@ -17,7 +17,7 @@ export class Renderer
 		this.canvas.width = window.innerWidth;
 		this.canvas.height = window.innerHeight;
 		
-		this.context.clearColor(0.18, 0.37, 0.36, 1.0);
+		this.context.clearColor(0.0, 0.0, 0.0, 1.0);
 		this.context.clear(this.context.COLOR_BUFFER_BIT);
 
 		this.context.enable(this.context.DEPTH_TEST);

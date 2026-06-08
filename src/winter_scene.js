@@ -12,6 +12,8 @@ let sun = null;
 let mesh = null;
 let particles = null;
 
+let particleAmount = 5_000;
+
 export async function generateWinterScene(renderer, shaderLit, shaderUnlit)
 {
     const context = renderer.context;
@@ -32,7 +34,7 @@ export async function generateWinterScene(renderer, shaderLit, shaderUnlit)
     sun = new DirectionalLight();
     sun.color = [1.0, 1.0, 1.0];
     sun.intensity = 1.0;
-    sun.rotation = [0.6, 0.4, 0.0];
+    sun.rotation = [0.9, 0.4, 0.0];
 
     scene.directionalLight = sun;
 
@@ -43,13 +45,13 @@ export async function generateWinterScene(renderer, shaderLit, shaderUnlit)
     );
 
     const particleVert = await fetchFile('./shader/particle_vert.glsl');
-    const particleFrag = await fetchFile('./shader/particle_frag.glsl');
+    const particleFrag = await fetchFile('./shader/snow_frag.glsl');
     const particleShader = new Shader(context, particleVert, particleFrag);
 
     particles = new ParticleSystem(context, particleAmount);
     particles.updateShader = updateShader;
     particles.renderShader = particleShader;
-    particles.position = [0, 4.5, 0];
+    particles.position = [0.0, 5.0, -4.0];
 
     scene.addParticles(particles);
     scene.addMesh(mesh);
@@ -82,5 +84,4 @@ export async function generateWinterScene(renderer, shaderLit, shaderUnlit)
 function update(time, delta)
 {
     particles.update(delta / 1000.0);
-    //console.log(self.sceneMesh);
 }

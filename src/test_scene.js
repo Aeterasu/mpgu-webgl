@@ -194,10 +194,12 @@ function update(time, delta)
 
     // animation
     const N = movingCubes.length;
+    console.log(N);
     const radius = 24.0;
     const speed = 0.001;
 
-    for (let i = 0; i < N; i++) {
+    for (let i = 0; i < N; i++)
+    {
         const angle = time * speed + (i * Math.PI * 2) / N;
 
         const x = Math.sin(angle) * radius;

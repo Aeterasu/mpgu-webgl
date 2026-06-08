@@ -33,12 +33,35 @@ const shaderLit = new Shader(context, vertexSrc, fragmentSrc);
 const shaderUnlit = new Shader(context, vertexSrc, fragmentUnlitSrc);
 const camera = new PerspectiveCamera(60, context.canvas.width / context.canvas.height);
 
-//const scene = await generateTestScene(renderer, shaderLit, shaderUnlit)
-const scene = await generateWinterScene(renderer, shaderLit, shaderUnlit)
-
 const player = new Player(canvas);
 player.position = [0.0, 15.0, 40.0];
 player.rotation = [-0.5, 0.0, 0.0];
+
+const scenes = {
+    demo: await generateTestScene(renderer, shaderLit, shaderUnlit),
+    winter: await generateWinterScene(renderer, shaderLit, shaderUnlit),
+};
+
+let scene = scenes.demo;
+
+window.setScene = async(name) =>
+{
+    scene = scenes[name];
+
+    if (name === 'demo')
+    {
+        renderer.context.clearColor(0.0, 0.0, 0.0, 1.0);
+    }
+    else if (name === 'winter')
+    {
+        renderer.context.clearColor(0.18, 0.37, 0.36, 1.0);
+    }
+
+    document.getElementById('btnDemoScene').classList.toggle('active', name === 'demo');
+    document.getElementById('btnWinterScene').classList.toggle('active', name === 'winter');
+};
+
+document.getElementById('btnDemoScene').classList.add('active');
 
 function frame(time)
 {
@@ -50,6 +73,11 @@ function frame(time)
     handleFpsCounter(time);
 
     player.update(deltaTime / 1000.0);
+
+    if (!scene)
+    {
+        return;
+    }
 
     if (scene.update)
     {
