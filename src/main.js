@@ -61,6 +61,18 @@ function frame(time)
 
     renderer.renderScene(scene, camera);
     requestAnimationFrame(frame);
+
+    let resizeTimeout = null;
+
+    window.addEventListener("resize", () =>
+    {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() =>
+        {
+            const aspect = renderer.resize();
+            camera.setAspect(aspect);
+        }, 100);
+    });
 }
 
 function handleFpsCounter(time)

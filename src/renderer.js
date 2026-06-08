@@ -78,6 +78,16 @@ export class Renderer
         this.renderTarget = new RenderTarget(this.context, w, h);
     }
 
+	resize()
+	{
+		this.canvas.width  = window.innerWidth;
+		this.canvas.height = window.innerHeight;
+
+		this.rebuildRenderTarget();
+
+		return this.canvas.width / this.canvas.height;
+	}
+
 	renderScene(scene, camera)
 	{
 		const context = this.context;
