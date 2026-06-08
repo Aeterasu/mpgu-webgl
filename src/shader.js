@@ -69,12 +69,6 @@ export class Shader
         this.context.useProgram(null);
     }
 
-    setUniformMatrix4fv(name, matrix) 
-    {
-        const loc = this.context.getUniformLocation(this.program, name);
-        this.context.uniformMatrix4fv(loc, false, matrix);
-    }
-
     destroy()
     { 
         this.context.deleteProgram(this.program);
@@ -92,6 +86,10 @@ export class Shader
 
     setMat4(name, matrix)
     {
+        if (!matrix || matrix.length < 16)
+        {
+            throw new Error(`setMat4("${name}"): invalid matrix — got ${matrix}`);
+        }
         this.context.uniformMatrix4fv(this.locateUniform(name), false, matrix);
     }
 

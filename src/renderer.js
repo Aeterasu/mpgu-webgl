@@ -14,11 +14,10 @@ export class Renderer
 			throw new Error("WebGL not supported");
 		}
 		
-		canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight;
-		this.context.viewport(0, 0, canvas.width, canvas.height);
+		this.canvas.width = window.innerWidth;
+		this.canvas.height = window.innerHeight;
 		
-		this.context.clearColor(0.0, 0.0, 0.0, 1.0);
+		this.context.clearColor(0.18, 0.37, 0.36, 1.0);
 		this.context.clear(this.context.COLOR_BUFFER_BIT);
 
 		this.context.enable(this.context.DEPTH_TEST);
@@ -103,7 +102,7 @@ export class Renderer
 				{
 					this.shadowShader.setMat4("uModel", mesh.modelMatrix);
 					context.bindVertexArray(mesh.vao);
-					context.drawElements(context.TRIANGLES, mesh.indexCount, context.UNSIGNED_SHORT, 0);
+					context.drawElements(context.TRIANGLES, mesh.indexCount, context.UNSIGNED_INT, 0);
 					context.bindVertexArray(null);
 				}
 			}
@@ -213,7 +212,7 @@ export class Renderer
 			}
 
 			context.bindVertexArray(mesh.vao);
-			context.drawElements(context.TRIANGLES, mesh.indexCount, context.UNSIGNED_SHORT, 0);
+			context.drawElements(context.TRIANGLES, mesh.indexCount, context.UNSIGNED_INT, 0);
 			context.bindVertexArray(null);
 
 			if (mesh.texture)

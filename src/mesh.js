@@ -37,7 +37,7 @@ export class Mesh
 		context.bufferData(context.ARRAY_BUFFER, new Float32Array(vertices), context.DYNAMIC_DRAW);
 
 		context.bindBuffer(context.ELEMENT_ARRAY_BUFFER, this.ebo);
-		context.bufferData(context.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), context.DYNAMIC_DRAW);
+		context.bufferData(context.ELEMENT_ARRAY_BUFFER, new Uint32Array(indices), context.DYNAMIC_DRAW);
 
 		const stride = 8 * 4; // 8 floats per vertex
 
@@ -104,11 +104,12 @@ export class Mesh
 			else if (line.startsWith("vt "))
 			{
 				const [, u, v] = line.split(/\s+/);
-				uvs.push([+u, +v]);
+				uvs.push([+u, 1.0 - +v]);
 			}
 			else if (line.startsWith("f "))
 			{
 				const [, ...verts] = line.split(/\s+/);
+				const vertexCache = new Map(); // put this OUTSIDE the loop, before parsing lines
 
 				for (let i = 1; i < verts.length - 1; i++)
 				{
@@ -116,19 +117,28 @@ export class Mesh
 
 					for (const v of tri)
 					{
-						const [pi, ti, ni] = v.split("/").map(x => x ? parseInt(x) : 0);
+						if (vertexCache.has(v))
+						{
+							finalIndices.push(vertexCache.get(v));
+						}
+						else
+						{
+							const [pi, ti, ni] = v.split("/").map(x => x ? parseInt(x) : 0);
 
-						const p = positions[pi - 1];
-						const n = ni ? normals[ni - 1]  : [0, 0, 0];
-						const t = ti ? uvs[ti - 1]      : [0, 0];
+							const p = positions[pi - 1];
+							const n = (ni && !isNaN(ni)) ? normals[ni - 1] : [0, 0, 0];
+							const t = (ti && !isNaN(ti)) ? uvs[ti - 1]     : [0, 0];
 
-						finalVertices.push(
-							p[0], p[1], p[2],
-							n[0], n[1], n[2],
-							t[0], t[1]
-						);
+							const idx = finalVertices.length / 8;
+							finalVertices.push(
+								p[0], p[1], p[2],
+								n[0], n[1], n[2],
+								t[0], t[1]
+							);
 
-						finalIndices.push(finalIndices.length);
+							vertexCache.set(v, idx);
+							finalIndices.push(idx);
+						}
 					}
 				}
 			}

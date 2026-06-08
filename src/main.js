@@ -6,6 +6,7 @@ import { Player } from "./player.js"
 import { fetchFile } from "./file_loader.js"
 
 import { generateTestScene } from "./test_scene.js";
+import { generateWinterScene } from "./winter_scene.js";
 
 const renderer = new Renderer();
 const context = renderer.initRenderer();
@@ -32,7 +33,8 @@ const shaderLit = new Shader(context, vertexSrc, fragmentSrc);
 const shaderUnlit = new Shader(context, vertexSrc, fragmentUnlitSrc);
 const camera = new PerspectiveCamera(60, context.canvas.width / context.canvas.height);
 
-const scene = await generateTestScene(renderer, shaderLit, shaderUnlit)
+//const scene = await generateTestScene(renderer, shaderLit, shaderUnlit)
+const scene = await generateWinterScene(renderer, shaderLit, shaderUnlit)
 
 const player = new Player(canvas);
 player.position = [0.0, 15.0, 40.0];
